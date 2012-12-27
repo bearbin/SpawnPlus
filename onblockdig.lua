@@ -27,19 +27,15 @@ function OnBlockDig( Player, X, Y, Z )
 	local xcoord = World:GetSpawnX()
 	local ycoord = World:GetSpawnY()
 	local zcoord = World:GetSpawnZ()
-	local num = 0	
-	if (X <= (xcoord + PROTECTRADIUS) and (X >= xcoord - PROTECTRADIUS)) then
-		num = num + 1
+	if !((X <= (xcoord + PROTECTRADIUS)) and (X >= (xcoord - PROTECTRADIUS))) then
+		return false -- Not in spawn area.
 	end
-	if (Y <= (ycoord + PROTECTRADIUS) and (Y >= ycoord - PROTECTRADIUS)) then 
-                num = num + 1
+	if !((Y <= (ycoord + PROTECTRADIUS)) and (Y >= (ycoord - PROTECTRADIUS))) then 
+                return false -- Not in spawn area.
         end
-	if (Z <= (zcoord + PROTECTRADIUS) and (Z >= zcoord - PROTECTRADIUS)) then 
-                num = num + 1
+	if !((Z <= (zcoord + PROTECTRADIUS)) and (Z >= (zcoord - PROTECTRADIUS))) then 
+                return false -- Not in spawn area.
         end
-	if num == 3 then
-		LOG("Player tried to break block at "..X..","..Y..","..Z.." but was prevented as it lies within the spawn radius")
-		return true
-	end
-	return false -- Not anywhere near spawn.
+	LOG("Player tried to break block at "..X..","..Y..","..Z.." but was prevented as it lies within the spawn radius")
+	return true
 end

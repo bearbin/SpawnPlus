@@ -21,26 +21,21 @@
 
 function OnBlockPlace( Player, X, Y, Z )
 	if Player:HasPermission("SpawnProtect.bypass") then
-                return false -- Player has permissions to build here.
-        end
+		return false -- Player has permissions to build here.
+	end
 	local World = Player:GetWorld()
 	local xcoord = World:GetSpawnX()
 	local ycoord = World:GetSpawnY()
 	local zcoord = World:GetSpawnZ()
-	local num2 = 0
-	if (X <= (xcoord + PROTECTRADIUS) and (X >= (xcoord - PROTECTRADIUS))) then
-		num2 = num2 + 1
+	if !((X <= (xcoord + PROTECTRADIUS)) and (X >= (xcoord - PROTECTRADIUS))) then
+		return false -- Not in spawn area.
 	end
-	if (Y <= (ycoord + PROTECTRADIUS) and (Y >= (ycoord - PROTECTRADIUS))) then
-		num2 = num2 + 1
-	end
-	if (Z <= (zcoord + PROTECTRADIUS) and (Z >= (zcoord - PROTECTRADIUS))) then
-		num2 = num2 + 1
-	end
-	if num2 == 3 then
-		LOG("Player tried to place block at "..X..","..Y..","..Z.." but was prevented as it lies within the spawn radius")
-		return true
-	end
-	return false -- Not anywhere near spawn.
+	if !((Y <= (ycoord + PROTECTRADIUS)) and (Y >= (ycoord - PROTECTRADIUS))) then 
+                return false -- Not in spawn area.
+        end
+	if !((Z <= (zcoord + PROTECTRADIUS)) and (Z >= (zcoord - PROTECTRADIUS))) then 
+                return false -- Not in spawn area.
+        end
+	LOG("Player tried to place block at "..X..","..Y..","..Z.." but was prevented as it lies within the spawn radius")
+	return true
 end
-
