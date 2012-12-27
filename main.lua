@@ -44,6 +44,7 @@ function Initialize( Plugin )
 		return f ~= nil
 	end
 
+	-- Overrides the protection radius with a user-provided one.
 	if file_exists('Plugins/SpawnProtect/radius.txt') then
 		local radiusFile = io.open('Plugins/SpawnProtect/radius.txt', 'r')		
 		local radius = tonumber(radiusFile:read('*all'))
