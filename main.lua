@@ -35,10 +35,11 @@ LOGPREFIX = ""
 function Initialize( Plugin )
 
         PLUGIN = Plugin
-	LOGPREFIX = "["..Plugin:GetName().."]"        
 
         Plugin:SetName( "SpawnProtect" )
         Plugin:SetVersion( 4 )        
+
+	LOGPREFIX = "["..Plugin:GetName().."]"
 
         PluginManager = cRoot:Get():GetPluginManager()
         PluginManager:AddHook(Plugin, cPluginManager.HOOK_BLOCK_PLACE)
