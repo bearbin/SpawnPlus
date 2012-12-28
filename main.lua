@@ -20,44 +20,46 @@
 -- SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
--- Global Variables
+-- Configuration
+
+PROTECTRADIUS = 10
+LOGBLOCKS     = true
+
+-- Globals
 
 PLUGIN = {}
-PROTECTRADIUS = 10
+LOGPREFIX = ""
 
 -- Plugin Start
 
 function Initialize( Plugin )
 
         PLUGIN = Plugin
-        
+	LOGPREFIX = "["..Plugin:GetName().."]"        
+
         Plugin:SetName( "SpawnProtect" )
-        Plugin:SetVersion( 3 )        
+        Plugin:SetVersion( 4 )        
 
         PluginManager = cRoot:Get():GetPluginManager()
         PluginManager:AddHook(Plugin, cPluginManager.HOOK_BLOCK_PLACE)
         PluginManager:AddHook(Plugin, cPluginManager.HOOK_BLOCK_DIG)
         
-	function file_exists(file)
-		local f = io.open(file, "r")
-		if f then f:close() end
-		return f ~= nil
-	end
-
-	-- Overrides the protection radius with a user-provided one.
-	if file_exists('Plugins/SpawnProtect/radius.txt') then
-		local radiusFile = io.open('Plugins/SpawnProtect/radius.txt', 'r')		
-		local radius = tonumber(radiusFile:read('*all'))
-		radiusFile:close()
-		if radius > 0 then
-			LOG("[SpawnProtect] Spawn radius overridden!")
-			LOG("[SpawnProtect] Radius is now "..PROTECTRADIUS.."!")
-		else
-			LOG("[SpawnProtect] Misformed radius.txt, please try again.")
-		end
-	end
-
-	LOG( "Initialized " .. Plugin:GetName() .. " v." .. Plugin:GetVersion() )
+	LOG( LOGPREFIX .. "Plugin v" .. Plugin:GetVersion() .. " Enabled!" )
         return true
 end
 
+function OnDisable()
+	LOG( LOGPREFIX .. " Plugin Disabled!" )
+end
+
+function WriteLog(breakPlace, X, Y, Z, player)
+	local breaker = ""
+	if breakPlace == 0 then
+		breaker = "break"
+	else
+		breaker = "place"
+	end
+	local logFile = io.open('Plugins/SpawnProtect/blocks.log', 'a')
+	logFile:write(player.." tried to "..breaker.." a block at : "..X..","..Y..","..Z.."!\n")
+	logFile:close()
+end
