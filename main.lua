@@ -39,7 +39,7 @@ function Initialize( Plugin )
         Plugin:SetName( "SpawnProtect" )
         Plugin:SetVersion( 4 )        
 
-	LOGPREFIX = "["..Plugin:GetName().."]"
+	LOGPREFIX = "["..Plugin:GetName().."] "
 
         PluginManager = cRoot:Get():GetPluginManager()
         PluginManager:AddHook(Plugin, cPluginManager.HOOK_BLOCK_PLACE)
@@ -50,7 +50,7 @@ function Initialize( Plugin )
 end
 
 function OnDisable()
-	LOG( LOGPREFIX .. " Plugin Disabled!" )
+	LOG( LOGPREFIX .. "Plugin Disabled!" )
 end
 
 function WriteLog(breakPlace, X, Y, Z, player)
