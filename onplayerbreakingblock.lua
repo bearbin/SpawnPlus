@@ -19,7 +19,7 @@
 -- TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 -- SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-function OnBlockDig( Player, X, Y, Z )
+function OnPlayerBreakingBlock( Player, X, Y, Z )
 	if Player:HasPermission("SpawnProtect.bypass") then
 		return false -- Player has permissions to build here.
 	end

@@ -37,13 +37,13 @@ function Initialize( Plugin )
         PLUGIN = Plugin
 
         Plugin:SetName( "SpawnProtect" )
-        Plugin:SetVersion( 4 )        
+        Plugin:SetVersion( 5 )
 
 	LOGPREFIX = "["..Plugin:GetName().."] "
 
         PluginManager = cRoot:Get():GetPluginManager()
-        PluginManager:AddHook(Plugin, cPluginManager.HOOK_BLOCK_PLACE)
-        PluginManager:AddHook(Plugin, cPluginManager.HOOK_BLOCK_DIG)
+        PluginManager:AddHook(Plugin, cPluginManager.HOOK_PLAYER_PLACING_BLOCK)
+        PluginManager:AddHook(Plugin, cPluginManager.HOOK_PLAYER_BREAKING_BLOCK)
         
 	LOG( LOGPREFIX .. "Plugin v" .. Plugin:GetVersion() .. " Enabled!" )
         return true
