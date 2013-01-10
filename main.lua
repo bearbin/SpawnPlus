@@ -1,4 +1,4 @@
--- Copyright (c) 2012 Alexander Harkness
+-- Copyright (c) 2012-2013 Alexander Harkness
 
 -- Permission is hereby granted, free of charge, to any person obtaining a
 -- copy of this software and associated documentation files (the
@@ -22,13 +22,20 @@
 
 -- Configuration
 
+LOADNB        = false
 PROTECTRADIUS = 10
-LOGBLOCKS     = true
+WARNPLAYER    = true
+-- Logging
+LOGTOCONSOLE  = true
+LOGTOFILE     = true
+LOGPLAYERNAME = true
+LOGBLOCKNAMES = false
 
 -- Globals
 
 PLUGIN = {}
 LOGPREFIX = ""
+NAMEDBLOCKS = nil
 
 -- Plugin Start
 
@@ -37,7 +44,7 @@ function Initialize( Plugin )
         PLUGIN = Plugin
 
         Plugin:SetName( "SpawnProtect" )
-        Plugin:SetVersion( 5 )
+        Plugin:SetVersion( 6 )
 
 	LOGPREFIX = "["..Plugin:GetName().."] "
 
@@ -45,6 +52,15 @@ function Initialize( Plugin )
         PluginManager:AddHook(Plugin, cPluginManager.HOOK_PLAYER_PLACING_BLOCK)
         PluginManager:AddHook(Plugin, cPluginManager.HOOK_PLAYER_BREAKING_BLOCK)
         
+	if LOADNB then
+		NAMEDBLOCKS = PluginManager:GetPlugin("NamedBlocks")
+	end
+
+	if LOGBLOCKNAMES and (not LOADNB) then
+		LOGWARN( LOGPREFIX .. "Logging of blocks is enabled, but NamedBlocks loading is not." )
+		LOGWARN( LOGPREFIX .. "Logging of block names will not be done, then.")
+	end
+
 	LOG( LOGPREFIX .. "Plugin v" .. Plugin:GetVersion() .. " Enabled!" )
         return true
 end
@@ -53,14 +69,51 @@ function OnDisable()
 	LOG( LOGPREFIX .. "Plugin Disabled!" )
 end
 
-function WriteLog(breakPlace, X, Y, Z, player)
-	local breaker = ""
-	if breakPlace == 0 then
-		breaker = "break"
-	else
-		breaker = "place"
+function WriteLog(breakPlace, X, Y, Z, player, id, meta)
+
+	if not (LOGTOCONSOLE or LOGTOFILE) then
+		return
 	end
-	local logFile = io.open('Plugins/SpawnProtect/blocks.log', 'a')
-	logFile:write(player.." tried to "..breaker.." a block at : "..X..","..Y..","..Z.."!\n")
-	logFile:close()
+
+	local logText = ""
+
+	if LOGPLAYERNAME then
+		logText = logText .. player
+	else
+		logText = logText .. "Player"
+	end
+
+	logText = logText .. " tried to "
+
+	if breakPlace == 0 then
+		logText = logText .. "break "
+	else
+		logText = logText .. "place "
+	end
+
+	if LOGBLOCKNAMES and NAMEDBLOCKS then
+		logText = logText .. NAMEDBLOCKS:Call("GetBlockName", id, meta)
+	else
+		logText = logText .. "a block"
+	end
+
+	logText = logText .. " at "..X..","..Y..","..Z.."."
+
+	if LOGTOCONSOLE then
+		LOG(LOGPREFIX..logText)
+	end
+
+	if LOGTOFILE then
+		local logFile = io.open('Plugins/SpawnProtect/blocks.log', 'a')
+		logFile:write(logText.."\n")
+		logFile:close()
+	end
+
+	return
+
+end
+
+function WarnPlayer(Player)
+	Player:SendMessage("You don't have permission to build here - go further from spawn.")
+	return
 end

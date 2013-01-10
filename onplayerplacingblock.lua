@@ -1,4 +1,4 @@
--- Copyright (c) 2012 Alexander Harkness
+-- Copyright (c) 2012-2013 Alexander Harkness
 
 -- Permission is hereby granted, free of charge, to any person obtaining a
 -- copy of this software and associated documentation files (the
@@ -19,14 +19,17 @@
 -- TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 -- SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-function OnPlayerPlacingBlock( Player, X, Y, Z )
+function OnPlayerPlacingBlock( Player, X, Y, Z, blockFace, cx, cy, cz, id, meta )
+
 	if Player:HasPermission("SpawnProtect.bypass") then
 		return false -- Player has permissions to build here.
 	end
+
 	local World = Player:GetWorld()
 	local xcoord = World:GetSpawnX()
 	local ycoord = World:GetSpawnY()
 	local zcoord = World:GetSpawnZ()
+
 	if not ((X <= (xcoord + PROTECTRADIUS)) and (X >= (xcoord - PROTECTRADIUS))) then
 		return false -- Not in spawn area.
 	end
@@ -36,10 +39,13 @@ function OnPlayerPlacingBlock( Player, X, Y, Z )
 	if not ((Z <= (zcoord + PROTECTRADIUS)) and (Z >= (zcoord - PROTECTRADIUS))) then 
                 return false -- Not in spawn area.
         end
-		
-	LOG("Player tried to place block at "..X..","..Y..","..Z.." but was prevented as it lies within the spawn radius")
-	if LOGBLOCKS == true then
-		WriteLog(1, X, Y, Z, Player:GetName())
+
+	if WARNPLAYER then
+		WarnPlayer(Player)
 	end
+
+	WriteLog(1, X, Y, Z, Player:GetName(), id, meta)
+
 	return true
+
 end
