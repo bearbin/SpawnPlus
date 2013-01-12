@@ -106,12 +106,12 @@ function WriteLog(breakPlace, X, Y, Z, player, id, meta)
 	table.insert(logText, ".")
 
 	if LOGTOCONSOLE then
-		LOG(LOGPREFIX..logText)
+		LOG(LOGPREFIX..table.concat(logText,''))
 	end
 
 	if LOGTOFILE then
 		local logFile = io.open('Plugins/SpawnProtect/blocks.log', 'a')
-		logFile:write(logText.."\n")
+		logFile:write(table.concat(logText,'').."\n")
 		logFile:close()
 	end
 
