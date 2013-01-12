@@ -44,7 +44,7 @@ function Initialize( Plugin )
         PLUGIN = Plugin
 
         Plugin:SetName( "SpawnProtect" )
-        Plugin:SetVersion( 6 )
+        Plugin:SetVersion( 7 )
 
 	LOGPREFIX = "["..Plugin:GetName().."] "
 
@@ -75,29 +75,35 @@ function WriteLog(breakPlace, X, Y, Z, player, id, meta)
 		return
 	end
 
-	local logText = ""
+	local logText = {}
 
 	if LOGPLAYERNAME then
-		logText = logText .. player
+		table.insert(logText, player)
 	else
-		logText = logText .. "Player"
+		table.insert(logText, "Player")
 	end
 
-	logText = logText .. " tried to "
+	table.insert(logText, " tried to ")
 
 	if breakPlace == 0 then
-		logText = logText .. "break "
+		table.insert(logText, "break ")
 	else
-		logText = logText .. "place "
+		table.insert(logText, "place ")
 	end
 
 	if LOGBLOCKNAMES and NAMEDBLOCKS then
-		logText = logText .. NAMEDBLOCKS:Call("GetBlockName", id, meta)
+		table.insert(logText, NAMEDBLOCKS:Call("GetBlockName", id, meta))
 	else
-		logText = logText .. "a block"
+		table.insert(logText, "a block")
 	end
 
-	logText = logText .. " at "..X..","..Y..","..Z.."."
+	table.insert(logText, " at ")
+	table.insert(logText, tostring(X))
+	table.insert(logText, ", ")
+	table.insert(logText, tostring(Y))
+	table.insert(logText, ", ")
+	table.insert(logText, tostring(Z))
+	table.insert(logText, ".")
 
 	if LOGTOCONSOLE then
 		LOG(LOGPREFIX..logText)
