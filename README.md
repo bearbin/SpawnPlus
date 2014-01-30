@@ -1,18 +1,19 @@
-SpawnProtect
+SpawnPlus
 ============
 
-SpawnProtect is a lightweight spawn protection plugin for [MCServer](http://mc-server.org).
+SpawnPlus is a spawn protection (and more) plugin for MCServer. It is designed to complement the in-built spawn protection in Core, and improve upon it. As such, it requires Core to be installed (why would you not have Core‽), and it uses the spawn radius that is set in Core.
 
 Installation
 ------------
 
-Simply clone the repo into your Plugins folder and enable SpawnProtect as a plugin in your settings.ini.
+Simply clone the repo into your Plugins folder and enable SpawnPlus as a plugin in your settings.ini.
 
-Alternatively, you may download the [latest zip](http://ci.berboe.co.uk:8080/job/SpawnProtect/lastSuccessfulBuild/artifact/SpawnProtect.zip) and extract it into your Plugins folder.
+Alternatively, you may download the [latest zip](http://ci.berboe.co.uk:/job/SpawnPlus/lastSuccessfulBuild/artifact/SpawnPlus.zip) and extract it into your Plugins folder.
 
-Try the [dev zip](http://ci.berboe.co.uk:8080/job/SpawnProtect-Dev/lastSuccessfulBuild/artifact/SpawnProtect.zip) as well!
+Features
+--------
 
-In order to log blocks people tried to break, you need to install NamedBlocks, set LOADNB to true at the top of main.lua then turn on block name logging.
+ * Notify people when they move into and out of spawn.
 
 Configuration
 -------------
