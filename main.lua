@@ -1,4 +1,4 @@
--- Copyright (c) 2012-2013 Alexander Harkness
+-- Copyright (c) 2012-2014 Alexander Harkness
 
 -- Permission is hereby granted, free of charge, to any person obtaining a
 -- copy of this software and associated documentation files (the
@@ -22,20 +22,13 @@
 
 -- Configuration
 
-LOADNB        = false
-PROTECTRADIUS = 10
-WARNPLAYER    = true
--- Logging
-LOGTOCONSOLE  = true
-LOGTOFILE     = true
-LOGPLAYERNAME = true
-LOGBLOCKNAMES = false
+-- Sorry, there isn't any yet :(
 
 -- Globals
 
 PLUGIN = {}
 LOGPREFIX = ""
-NAMEDBLOCKS = nil
+PLAYERLOCATIONS = {}
 
 -- Plugin Start
 
@@ -43,23 +36,12 @@ function Initialize( Plugin )
 
         PLUGIN = Plugin
 
-        Plugin:SetName( "SpawnProtect" )
-        Plugin:SetVersion( 7 )
+        Plugin:SetName( "SpawnPlus" )
+        Plugin:SetVersion( 1 )
 
 	LOGPREFIX = "["..Plugin:GetName().."] "
 
-        PluginManager = cRoot:Get():GetPluginManager()
-        PluginManager:AddHook(Plugin, cPluginManager.HOOK_PLAYER_PLACING_BLOCK)
-        PluginManager:AddHook(Plugin, cPluginManager.HOOK_PLAYER_BREAKING_BLOCK)
-        
-	if LOADNB then
-		NAMEDBLOCKS = PluginManager:GetPlugin("NamedBlocks")
-	end
-
-	if LOGBLOCKNAMES and (not LOADNB) then
-		LOGWARN( LOGPREFIX .. "Logging of blocks is enabled, but NamedBlocks loading is not." )
-		LOGWARN( LOGPREFIX .. "Logging of block names will not be done, then.")
-	end
+        cPluginManager:AddHook(Plugin, cPluginManager.HOOK_PLAYER_MOVING, OnPlayerMoving)
 
 	LOG( LOGPREFIX .. "Plugin v" .. Plugin:GetVersion() .. " Enabled!" )
         return true
@@ -69,57 +51,55 @@ function OnDisable()
 	LOG( LOGPREFIX .. "Plugin Disabled!" )
 end
 
-function WriteLog(breakPlace, X, Y, Z, player, id, meta)
+function OnPlayerMoving(Player)
 
-	if not (LOGTOCONSOLE or LOGTOFILE) then
-		return
+	local world = Player:GetWorld()
+	local playerx = Player:GetPosX()
+	local playery = Player:GetPosY()
+	local playerz = Player:GetPosZ()
+	local name = Player:GetName()
+	
+	if PLAYERLOCATIONS[name] ~= nil then
+		if not IsInSpawn(PLAYERLOCATIONS[name]["x"], PLAYERLOCATIONS[name]["y"], PLAYERLOCATIONS[name]["z"], PLAYERLOCATIONS[name]["world"])
+			if not IsInSpawn(playerx, playery, playerz, world) then
+				-- Do nothing, the player isn't in spawn, and they weren't
+			else
+				Player:SendMessage("You have entered spawn!")
+			end
+		else
+			if not IsInSpawn(playerx, playery, playerz, world) then
+				Player:SendMessage("You have exited spawn!")
+			else
+				-- Do nothing, the player was in spawn, they still are.
+			end
+		end
 	end
 
-	local logText = {}
-
-	if LOGPLAYERNAME then
-		table.insert(logText, player)
-	else
-		table.insert(logText, "Player")
-	end
-
-	table.insert(logText, " tried to ")
-
-	if breakPlace == 0 then
-		table.insert(logText, "break ")
-	else
-		table.insert(logText, "place ")
-	end
-
-	if LOGBLOCKNAMES and NAMEDBLOCKS then
-		table.insert(logText, NAMEDBLOCKS:Call("GetBlockName", id, meta))
-	else
-		table.insert(logText, "a block")
-	end
-
-	table.insert(logText, " at ")
-	table.insert(logText, tostring(X))
-	table.insert(logText, ", ")
-	table.insert(logText, tostring(Y))
-	table.insert(logText, ", ")
-	table.insert(logText, tostring(Z))
-	table.insert(logText, ".")
-
-	if LOGTOCONSOLE then
-		LOG(LOGPREFIX..table.concat(logText,''))
-	end
-
-	if LOGTOFILE then
-		local logFile = io.open('Plugins/SpawnProtect/blocks.log', 'a')
-		logFile:write(table.concat(logText,'').."\n")
-		logFile:close()
-	end
-
-	return
+	PLAYERLOCATIONS[name] = {x = playerx, y = playery, z = playerz, world = world}
 
 end
 
-function WarnPlayer(Player)
-	Player:SendMessage("You don't have permission to build here - go further from spawn.")
-	return
+function IsInSpawn(x, y, z, world)
+	
+	-- Get Spawn Coordinates for the World
+	local spawnx = world:GetSpawnX()
+	local spawny = world:GetSpawnY()
+	local spawnz = world:GetSpawnZ()
+	
+	-- Get protection radius from the Core plugin.
+	local protectRadius = cPluginManager:CallPlugin("Core", "getSpawnProtectRadius", world)
+	
+	-- Check if the specified coords are in the spawn.
+	if not ((x <= (spawnx + protectRadius)) and (x >= (spawnx - protectRadius))) then
+                return false -- Not in spawn area.
+        end
+        if not ((y <= (spawny + protectRadius)) and (y >= (spawny - protectRadius))) then 
+                return false -- Not in spawn area.
+        end
+        if not ((z <= (spawnz + protectRadius)) and (z >= (spawnz - protectRadius))) then 
+                return false -- Not in spawn area.
+        end
+        
+        -- They must be in spawn now :)
+        return true
 end
