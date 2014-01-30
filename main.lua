@@ -80,14 +80,14 @@ function OnPlayerMoving(Player)
 	if PLAYERLOCATIONS[name] ~= nil then
 		if not IsInSpawn(PLAYERLOCATIONS[name]["x"], PLAYERLOCATIONS[name]["y"], PLAYERLOCATIONS[name]["z"], PLAYERLOCATIONS[name]["world"]) then
 			if IsInSpawn(playerx, playery, playerz, world) then
-				else if not MESSAGE[Player:GetName()] == false then
-					Player:SendMessage("You have entered spawn!")
+				if MESSAGE[Player:GetName()] ~= false then
+					SendMessage(Player, "You have entered spawn!")
 				end
 			end
 		else
 			if not IsInSpawn(playerx, playery, playerz, world) then
-				if not MESSAGE[Player:GetName()] == false then
-					Player:SendMessage("You have exited spawn!")
+				if MESSAGE[Player:GetName()] ~= false then
+					SendMessage(Player, "You have exited spawn!")
 				end
 			end
 		end
@@ -119,6 +119,7 @@ function IsInSpawn(x, y, z, worldName)
                 return false -- Not in spawn area.
         end
         
-        -- They must be in spawn now :)
+	-- If they're not not in spawn, they must be in spawn!
         return true
+
 end
