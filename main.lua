@@ -41,8 +41,13 @@ function Initialize( Plugin )
 
 	LOGPREFIX = "["..Plugin:GetName().."] "
 
-        cPluginManager:AddHook(Plugin, cPluginManager.HOOK_PLAYER_MOVING, OnPlayerMoving)
-        cPluginManager:BindCommand("/togglespawnmessage", "spawnplus.togglemessage", ToggleMessages, " - Toggle the message upon entering and leaving spawn.")
+	-- Hooks
+        cPluginManager.AddHook(cPluginManager.HOOK_PLAYER_MOVING, OnPlayerMoving)
+
+	-- Commands
+	if ALLOWMESSAGETOGGLE then
+	        cPluginManager.BindCommand("/togglespawnmessage", "spawnplus.togglemessage", ToggleMessages, " - Toggle the message upon entering and leaving spawn.")
+	end
 
 	LOG( LOGPREFIX .. "Plugin v" .. Plugin:GetVersion() .. " Enabled!" )
         return true
@@ -62,15 +67,15 @@ end
 
 function OnPlayerMoving(Player)
 
-	local world = Player:GetWorld()
+	local world = Player:GetWorld():GetName()
 	local playerx = Player:GetPosX()
 	local playery = Player:GetPosY()
 	local playerz = Player:GetPosZ()
 	local name = Player:GetName()
 	
 	if PLAYERLOCATIONS[name] ~= nil then
-		if not IsInSpawn(PLAYERLOCATIONS[name]["x"], PLAYERLOCATIONS[name]["y"], PLAYERLOCATIONS[name]["z"], PLAYERLOCATIONS[name]["world"])
-			if  IsInSpawn(playerx, playery, playerz, world) then
+		if not IsInSpawn(PLAYERLOCATIONS[name]["x"], PLAYERLOCATIONS[name]["y"], PLAYERLOCATIONS[name]["z"], PLAYERLOCATIONS[name]["world"]) then
+			if IsInSpawn(playerx, playery, playerz, world) then
 				else if not MESSAGE[Player:GetName()] == false then
 					Player:SendMessage("You have entered spawn!")
 				end
@@ -88,15 +93,16 @@ function OnPlayerMoving(Player)
 
 end
 
-function IsInSpawn(x, y, z, world)
+function IsInSpawn(x, y, z, worldName)
 	
 	-- Get Spawn Coordinates for the World
+	local world = cRoot:Get():GetWorld(worldName)
 	local spawnx = world:GetSpawnX()
 	local spawny = world:GetSpawnY()
 	local spawnz = world:GetSpawnZ()
 	
 	-- Get protection radius from the Core plugin.
-	local protectRadius = cPluginManager:CallPlugin("Core", "getSpawnProtectRadius", world)
+	local protectRadius = cPluginManager:CallPlugin("Core", "getSpawnProtectRadius", worldName)
 	
 	-- Check if the specified coords are in the spawn.
 	if not ((x <= (spawnx + protectRadius)) and (x >= (spawnx - protectRadius))) then
