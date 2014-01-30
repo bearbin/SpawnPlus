@@ -22,7 +22,7 @@
 
 -- Configuration
 
--- Sorry, there isn't any yet :(
+ALLOWMESSAGETOGGLE = true
 
 -- Globals
 
@@ -42,6 +42,7 @@ function Initialize( Plugin )
 	LOGPREFIX = "["..Plugin:GetName().."] "
 
         cPluginManager:AddHook(Plugin, cPluginManager.HOOK_PLAYER_MOVING, OnPlayerMoving)
+        cPluginManager:BindCommand("/togglespawnmessage", "spawnplus.togglemessage", ToggleMessages, " - Toggle the message upon entering and leaving spawn.")
 
 	LOG( LOGPREFIX .. "Plugin v" .. Plugin:GetVersion() .. " Enabled!" )
         return true
@@ -49,6 +50,14 @@ end
 
 function OnDisable()
 	LOG( LOGPREFIX .. "Plugin Disabled!" )
+end
+
+function ToggleMessages(Split, Player)
+	if MESSAGE[Player:GetName()] == nil or MESSAGE[Player:GetName()] == true then
+		MESSAGE[Player:GetName()] = false
+	else
+		MESSAGE[Player:GetName()] = true	
+	end
 end
 
 function OnPlayerMoving(Player)
@@ -61,16 +70,16 @@ function OnPlayerMoving(Player)
 	
 	if PLAYERLOCATIONS[name] ~= nil then
 		if not IsInSpawn(PLAYERLOCATIONS[name]["x"], PLAYERLOCATIONS[name]["y"], PLAYERLOCATIONS[name]["z"], PLAYERLOCATIONS[name]["world"])
-			if not IsInSpawn(playerx, playery, playerz, world) then
-				-- Do nothing, the player isn't in spawn, and they weren't
-			else
-				Player:SendMessage("You have entered spawn!")
+			if  IsInSpawn(playerx, playery, playerz, world) then
+				else if not MESSAGE[Player:GetName()] == false then
+					Player:SendMessage("You have entered spawn!")
+				end
 			end
 		else
 			if not IsInSpawn(playerx, playery, playerz, world) then
-				Player:SendMessage("You have exited spawn!")
-			else
-				-- Do nothing, the player was in spawn, they still are.
+				if not MESSAGE[Player:GetName()] == false then
+					Player:SendMessage("You have exited spawn!")
+				end
 			end
 		end
 	end
