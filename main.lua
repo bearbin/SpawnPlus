@@ -29,6 +29,7 @@ ALLOWMESSAGETOGGLE = true
 PLUGIN = {}
 LOGPREFIX = ""
 PLAYERLOCATIONS = {}
+MESSAGE = {}
 
 -- Plugin Start
 
