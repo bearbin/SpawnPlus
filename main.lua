@@ -61,9 +61,12 @@ end
 function ToggleMessages(Split, Player)
 	if MESSAGE[Player:GetName()] == nil or MESSAGE[Player:GetName()] == true then
 		MESSAGE[Player:GetName()] = false
+		SendMessageSuccess(Player, "Spawn entry messages disabled!")
 	else
 		MESSAGE[Player:GetName()] = true	
+		SendMessageSuccess(Player, "Spawn entry messages enabled!")
 	end
+	return true
 end
 
 function OnPlayerMoving(Player)
